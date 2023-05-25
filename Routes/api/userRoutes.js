@@ -1,18 +1,19 @@
-// /api/users
+const router = require('express').Router();
+// import CRUD from courseController
+const {
+    createUser,
+    getUsers,
+    getOneUser,
+    updateUser,
+    deleteUser,
+} = require('.../Controllers/userController');
+// set /api/users methods for GET and POST
+router.route('/').get(getUsers).post(createUser);
+// CRUD for single user methods at /api/users/userID
+router
+    .route('/:UserId')
+    .get(getOneUser)
+    .put(updateUser)
+    .delete(deleteUser);
 
-// GET all users
-
-// GET a single user by its _id and populated thought and friend data
-
-// POST a new user:
-
-// // example data
-// {
-//   "username": "lernantino",
-//   "email": "lernantino@gmail.com"
-// }
-// PUT to update a user by its _id
-
-// DELETE to remove user by its _id
-
-// BONUS: Remove a user's associated thoughts when deleted.
+module.exports = router;
