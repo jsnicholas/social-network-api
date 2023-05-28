@@ -15,11 +15,11 @@ const thoughtSchema = new Schema(
             default: Date.now(),
             //TO-DO: Use a getter method to format the timestamp on query
         },
-        username: [{
+        username: {
             type: String,
             required: true,
             ref: 'user',
-        }],
+        },
         reactions: [{
             type: Schema.Types.ObjectId,
             ref: 'reactions',

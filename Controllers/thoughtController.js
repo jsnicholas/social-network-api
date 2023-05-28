@@ -1,16 +1,31 @@
 const Thought = require('./../Models/Thought');
+const User = require('./../Models/User');
 
 module.exports = {
-    // Get all Thoughts
+    // Thoughts CRUD
+    // Create a thought
+    async createThought(req, res) {
+        try {
+            // create a thought w/ req body
+            const createThought = await Thought.create(req.body);
+            const addThoughtToUser = await User.findOneAndUpdate({ username: req.body.username }, { $push: { thoughts: createThought } });
+            res.status(200).json(addThoughtToUser)
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(500).json(err);
+        };
+    },
+    //get all thoughts
     getThoughts(req, res) {
         Thought.find()
             .then((thoughts) => res.json(thoughts))
             .catch((err) => res.status(500).json(err));
     },
-    // Get a Thought
+    // Get single Thought
     getOneThought(req, res) {
         // find a thought that matches the /:id
-        Thought.findOne({ _id: req.params.ThoughtId })
+        Thought.findOne({ _id: req.params.thoughtID })
             // select the most recent version
             .select('-__v')
             .then((thought) =>
@@ -22,36 +37,11 @@ module.exports = {
             )
             .catch((err) => res.status(500).json(err));
     },
-    // Create a thought
-    createThought(req, res) {
-        // create a thought w/ req body
-        Thought.create(req.body)
-            // return the thought as a json object
-            .then((thought) => res.json(thought))
-            .catch((err) => {
-                console.log(err);
-                return res.status(500).json(err);
-            });
-    },
-    // Delete a thought
-    deleteThought(req, res) {
-        Thought.findOneAndDelete({ _id: req.params.ThoughtId })
-            .then((thought) =>
-                // if thought not found
-                !thought
-                    ? res.status(404).json({ message: 'No thought with that ID' })
-                    // if thought found
-                    // How does this connect thoughts and users?
-                    : Student.deleteMany({ _id: { $in: course.students } })
-            )
-            .then(() => res.json({ message: 'Course and students deleted!' }))
-            .catch((err) => res.status(500).json(err));
-    },
     // Update a thought
     updateThought(req, res) {
         Thought.findOneAndUpdate(
             // find the thought by ID
-            { _id: req.params.ThoughtId },
+            { _id: req.params.thoughtID },
             // then update the thought w the body of user req
             { $set: req.body },
             { runValidators: true, new: true }
@@ -63,6 +53,20 @@ module.exports = {
                     //if it does exist, return it
                     : res.json(thought)
             )
+            .catch((err) => res.status(500).json(err));
+    },
+    // Delete a thought
+    deleteThought(req, res) {
+        Thought.findOneAndDelete({ _id: req.params.thoughtID })
+            .then((thought) =>
+                // if thought not found
+                !thought
+                    ? res.status(404).json({ message: 'No thought with that ID' })
+                    // if thought found
+                    // delete all associated reactions
+                    : Reaction.deleteMany({ _id: { $in: thought.reactions } })
+            )
+            .then(() => res.json({ message: 'Thought and Reactions deleted' }))
             .catch((err) => res.status(500).json(err));
     },
 };

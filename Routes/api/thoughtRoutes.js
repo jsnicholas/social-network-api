@@ -12,7 +12,7 @@ const {
 router.route('/').get(getThoughts).post(createThought);
 // CRUD for single thought methods at /api/users/userID
 router
-    .route('/:thoughtId')
+    .route('/:thoughtID')
     .get(getOneThought)
     .put(updateThought)
     .delete(deleteThought);

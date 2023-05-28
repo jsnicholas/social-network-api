@@ -1,6 +1,7 @@
 const User = require('./../Models/User');
 
 module.exports = {
+    // User CRUD
     // Create a User
     async createUser(req, res) {
         await User.create(req.body)
@@ -22,35 +23,35 @@ module.exports = {
             .select('-__v')
             .then((user) =>
                 !user
-                    ? res.status(404).json({ message: 'No user with that ID' })
+                    ? res.status(404).json({ message: 'User ID not found.' })
                     : res.json(user)
             )
-            .catch((err) => res.status(500).json(err));
-    },
-    // Delete a user
-    deleteUser(req, res) {
-        User.findOneAndDelete({ _id: req.params.userId })
-            .then((user) =>
-                !user
-                    ? res.status(404).json({ message: 'No user with that ID' })
-                    // To Do: do we need a delete many for any reason? Delete user thoughts?
-                    : User.deleteMany({ _id: { $in: course.students } })
-            )
-            .then(() => res.json({ message: 'Course and students deleted!' }))
             .catch((err) => res.status(500).json(err));
     },
     // Update a course
     updateUser(req, res) {
         Course.findOneAndUpdate(
-            { _id: req.params.courseId },
+            { _id: req.params.userID },
             { $set: req.body },
             { runValidators: true, new: true }
         )
             .then((course) =>
                 !course
-                    ? res.status(404).json({ message: 'No course with this id!' })
+                    ? res.status(404).json({ message: 'User ID not found.' })
                     : res.json(course)
             )
+            .catch((err) => res.status(500).json(err));
+    },
+    // Delete a user
+    deleteUser(req, res) {
+        User.findOneAndDelete({ _id: req.params.userID })
+            .then((user) =>
+                !user
+                    ? res.status(404).json({ message: 'User ID not found.' })
+                    // Delete all thoughts associated with deleted user
+                    : User.deleteMany({ _id: { $in: user.thoughts } })
+            )
+            .then(() => res.json({ message: 'Course and students deleted!' }))
             .catch((err) => res.status(500).json(err));
     },
 };
