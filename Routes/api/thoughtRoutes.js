@@ -1,4 +1,25 @@
 // /api/thoughts
+const router = require('express').Router();
+// import CRUD from thoughtController
+const {
+    createThought,
+    getThoughts,
+    getOneThought,
+    updateThought,
+    deleteThought,
+} = require('../../Controllers/thoughtController');
+// set /api/thoughts methods for GET and POST
+router.route('/').get(getThoughts).post(createThought);
+// CRUD for single thought methods at /api/users/userID
+router
+    .route('/:thoughtId')
+    .get(getOneThought)
+    .put(updateThought)
+    .delete(deleteThought);
+
+module.exports = router;
+
+
 
 // GET to get all thoughts
 

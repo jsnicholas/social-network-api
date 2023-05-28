@@ -6,12 +6,12 @@ const {
     getOneUser,
     updateUser,
     deleteUser,
-} = require('.../Controllers/userController');
+} = require('../../Controllers/userController');
 // set /api/users methods for GET and POST
 router.route('/').get(getUsers).post(createUser);
 // CRUD for single user methods at /api/users/userID
 router
-    .route('/:UserId')
+    .route('/:userID')
     .get(getOneUser)
     .put(updateUser)
     .delete(deleteUser);
