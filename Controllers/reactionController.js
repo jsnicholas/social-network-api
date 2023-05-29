@@ -8,7 +8,7 @@ module.exports = {
     // "thoughtText": "contents of thought"
     // "username": "person1"
     // }
-    async createThought(req, res) {
+    async addReaction(req, res) {
         try {
             // assign thought to the given user in req
             await User.findOneAndUpdate({ username: req.body.username }, { $push: { thoughts: await Thought.create(req.body) } })
@@ -21,13 +21,13 @@ module.exports = {
         };
     },
     //get all thoughts
-    getThoughts(req, res) {
+    getReactions(req, res) {
         Thought.find()
             .then((thoughts) => res.json(thoughts))
             .catch((err) => res.status(500).json(err));
     },
     // Get single Thought
-    getOneThought(req, res) {
+    getOneReaction(req, res) {
         // find a thought that matches the /:id
         Thought.findOne({ _id: req.params.thoughtID })
             // select the most recent version
@@ -60,7 +60,7 @@ module.exports = {
             .catch((err) => res.status(500).json(err));
     },
     // Delete a thought
-    deleteThought(req, res) {
+    deleteReaction(req, res) {
         Thought.findOneAndDelete({ _id: req.params.thoughtID })
             .then((thought) =>
                 // if thought not found
