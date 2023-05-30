@@ -3,43 +3,38 @@ const User = require('./../Models/User');
 
 module.exports = {
     // Thoughts CRUD
-    // Create a thought. Format:
+    // Create a reaction. Format:
     // {
-    // "thoughtText": "contents of thought"
-    // "username": "person1"
+    // "reactionText": "contents of reaction"
+    // "username": "who posted the reaction"
     // }
     async addReaction(req, res) {
         try {
-            // assign thought to the given user in req
-            await User.findOneAndUpdate({ username: req.body.username }, { $push: { thoughts: await Thought.create(req.body) } })
-                .then((thought) => {
-                    res.status(200).json(thought)
+            // add a reaction to requested thought
+            // return the array of reactions after POST completes
+            await Thought.findOneAndUpdate({ _id: req.params.thoughtID }, { $push: { reactions: { reactionBody: req.body.reactionBody, username: req.body.username } } }, { new: true })
+                .then((reaction) => {
+                    res.status(200).json(reaction)
                 })
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);
         };
     },
-    //get all thoughts
+    //get all reactions from requested thought
     getReactions(req, res) {
-        Thought.find()
-            .then((thoughts) => res.json(thoughts))
+        Thought.find({}, ['reactions'])
+            .then((reactions) => res.json(reactions))
             .catch((err) => res.status(500).json(err));
     },
-    // Get single Thought
+    // Get single reaction from requested thought
     getOneReaction(req, res) {
-        // find a thought that matches the /:id
-        Thought.findOne({ _id: req.params.thoughtID })
-            // select the most recent version
-            .select('-__v')
-            .then((thought) =>
-                //if the thought doesn't exist, 404 res
-                !thought
-                    ? res.status(404).json({ message: 'No thought with that ID' })
-                    // if it is found, return the thought as json object
-                    : res.json(thought)
-            )
-            .catch((err) => res.status(500).json(err));
+        // find a reaction that matches the /:id
+        Thought.findOne({}, { reactions: [{ _id: req.params.reactionID }] })
+            .then((thought) => {
+                res.json(thought)
+            })
+        // Access a single subdocument within the "reactions" array
     },
     // Update a thought
     updateThought(req, res) {
