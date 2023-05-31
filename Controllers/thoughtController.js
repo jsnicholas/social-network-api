@@ -8,13 +8,12 @@ module.exports = {
     // "thoughtText": "contents of thought"
     // "username": "person1"
     // }
-    createThought(req, res) {
+    async createThought(req, res) {
         try {
             // assign thought to the given user in req
-            User.findOneAndUpdate({ username: req.body.username }, { $push: { thoughts: Thought.create(req.body) }, new: true })
-                .then(() => {
-                    res.status(200).json('Created new thought')
-                })
+            const createThought = await Thought.create(req.body);
+            const addThoughtToUser = await User.findOneAndUpdate({ username: req.body.username }, { $push: { thoughts: createThought } });
+            res.status(200).json(addThoughtToUser)
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);
@@ -68,9 +67,8 @@ module.exports = {
                     ? res.status(404).json({ message: 'No thought with that ID' })
                     // if thought found
                     // delete all associated reactions
-                    : Reaction.deleteMany({ _id: { $in: thought.reactions } })
+                    : res.json({ message: 'Thought deleted.' })
             )
-            .then(() => res.json({ message: 'Thought and Reactions deleted' }))
             .catch((err) => res.status(500).json(err));
     },
 };

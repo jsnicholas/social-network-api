@@ -64,6 +64,8 @@ After downloading, run `npm i` to install dependencies. Start the server with `n
 
 ## Demo Video
 
+[https://drive.google.com/file/d/1ZfotZ_siCJhdO9lUIshrYeVigMn7smTF/view?usp=sharing](https://drive.google.com/file/d/1ZfotZ_siCJhdO9lUIshrYeVigMn7smTF/view?usp=sharing)
+
 ## License
 
 MIT. Please read the LICENSE file for more information.
