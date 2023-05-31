@@ -8,12 +8,12 @@ module.exports = {
     // "thoughtText": "contents of thought"
     // "username": "person1"
     // }
-    async createThought(req, res) {
+    createThought(req, res) {
         try {
             // assign thought to the given user in req
-            await User.findOneAndUpdate({ username: req.body.username }, { $push: { thoughts: await Thought.create(req.body) } })
-                .then((thought) => {
-                    res.status(200).json(thought)
+            User.findOneAndUpdate({ username: req.body.username }, { $push: { thoughts: Thought.create(req.body) }, new: true })
+                .then(() => {
+                    res.status(200).json('Created new thought')
                 })
         } catch (err) {
             console.log(err);

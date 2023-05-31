@@ -23,49 +23,32 @@ module.exports = {
     },
     //get all reactions from requested thought
     getReactions(req, res) {
-        Thought.find({}, ['reactions'])
+        Thought.find({ _id: req.params.thoughtID }, ['reactions'])
             .then((reactions) => res.json(reactions))
             .catch((err) => res.status(500).json(err));
     },
     // Get single reaction from requested thought
     getOneReaction(req, res) {
-        // find a reaction that matches the /:id
-        Thought.findOne({}, { reactions: [{ _id: req.params.reactionID }] })
+        // find a thought that matches the /:thoughtID
+        Thought.findOne({ _id: req.params.thoughtID })
             .then((thought) => {
-                res.json(thought)
+                //filter out the reaction specified with /:reactionID
+                var reaction = thought.reactions.filter(
+                    reaction => reaction.reactionId ==
+                        req.params.reactionID);
+                res.json(reaction)
             })
-        // Access a single subdocument within the "reactions" array
     },
-    // Update a thought
-    updateThought(req, res) {
-        Thought.findOneAndUpdate(
-            // find the thought by ID
-            { _id: req.params.thoughtID },
-            // then update the thought w the body of user req
-            { $set: req.body },
-            { runValidators: true, new: true }
-        )
-            .then((thought) =>
-                //if the thought doesn't exist, 404
-                !thought
-                    ? res.status(404).json({ message: 'No thought with that ID' })
-                    //if it exists, return it
-                    : res.json(thought)
-            )
-            .catch((err) => res.status(500).json(err));
-    },
-    // Delete a thought
+    // Delete a reaction
     deleteReaction(req, res) {
-        Thought.findOneAndDelete({ _id: req.params.thoughtID })
-            .then((thought) =>
-                // if thought not found
+        Thought.findOneAndDelete({}, { reactions: [{ _id: req.params.reactionID }] })
+            .then((reaction) =>
+                // if reaction not found
                 !thought
                     ? res.status(404).json({ message: 'No thought with that ID' })
                     // if thought found
                     // delete all associated reactions
-                    : Reaction.deleteMany({ _id: { $in: thought.reactions } })
-            )
-            .then(() => res.json({ message: 'Thought and Reactions deleted' }))
+                    : res.json({ message: 'Reaction Deleted' }))
             .catch((err) => res.status(500).json(err));
     },
 };
